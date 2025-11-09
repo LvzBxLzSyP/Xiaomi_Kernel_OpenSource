@@ -2,10 +2,14 @@ OBJCOPYFLAGS_Image := -O binary -R .note -R .note.gnu.build-id -R .comment -S
 
 targets := Image Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo
 
-# ==== 手動加入自訂 DTB ====
-MY_DTB := $(srctree)/camellia.dtb
-DTB_OBJS := $(MY_DTB)
-# =========================
+# === 自訂 DTS 編譯規則 ===
+MY_DTS := $(srctree)/arch/arm64/boot/mydevice.dts
+MY_DTB := $(obj)/mydevice.dtb
+
+$(MY_DTB): $(MY_DTS)
+	@echo "  DTC     $@"
+	$(DTC) -I dts -O dtb -o $@ $<
+# ========================
 
 $(obj)/Image: vmlinux FORCE
 	$(call if_changed,objcopy)
